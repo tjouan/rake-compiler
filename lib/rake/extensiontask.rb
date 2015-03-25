@@ -453,9 +453,12 @@ Java extension should be preferred.
           if RUBY_PLATFORM =~ /mswin/ then
             'nmake'
           else
-            ENV['MAKE'] || %w[gmake make].find { |c|
+            ENV['MAKE'] || %w[gmake make].find do |c|
               system("#{c} -v >> #{dev_null} 2>&1")
-            }
+            end || ENV['PATH'].split(File::PATH_SEPARATOR).find do |dir_path|
+              make_path = File.join(dir_path, 'make')
+              break make_path if File.executable?(make_path)
+            end
           end
       end
 
